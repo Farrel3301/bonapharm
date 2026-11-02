@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="'Bonapharm | ' + ${titulo}">Bonapharm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/bonapharm.css}">
+</head>
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg bp-nav">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/menuprincipal}"><i class="bi bi-capsule-pill me-2"></i>Bonapharm</a>
+        <div class="navbar-nav flex-row gap-3 me-auto ms-4">
+            <a class="nav-link" th:href="@{/menuprincipal}">Inicio</a>
+            <a class="nav-link" th:href="@{/productos/listar}">Productos</a>
+            <a class="nav-link" th:href="@{/productos/stock}">Stock</a>
+        </div>
+        <span class="bp-user me-3"><i class="bi bi-person-circle me-1"></i><span th:text="${session.nombre}">Admin</span></span>
+        <a class="btn btn-sm btn-outline-light" th:href="@{/logout}"><i class="bi bi-box-arrow-right"></i> Salir</a>
+    </div>
+</nav>
+</body>
+</html>

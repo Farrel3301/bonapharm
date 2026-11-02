@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Iniciar sesión')}"></head>
+<body>
+<div class="login-wrap">
+    <div class="login-art">
+        <i class="bi bi-capsule-pill"></i>
+        <h1>Bonapharm</h1>
+        <p class="fs-5">Gestión de ventas e inventarios farmacéuticos.</p>
+        <ul class="p-0 mt-3">
+            <li><i class="bi bi-check-circle-fill me-2 fs-6"></i>Control de stock en tiempo real</li>
+            <li><i class="bi bi-check-circle-fill me-2 fs-6"></i>Registro de productos y ventas</li>
+            <li><i class="bi bi-check-circle-fill me-2 fs-6"></i>Reportes de inventario</li>
+        </ul>
+    </div>
+    <div class="login-form">
+        <form class="login-box" th:action="@{/login}" method="post">
+            <h2 class="fw-bold mb-1">Bienvenido</h2>
+            <p class="text-secondary mb-4">Ingresa tus credenciales para continuar</p>
+            <div class="alert alert-danger py-2" th:if="${error}"><i class="bi bi-exclamation-circle me-1"></i><span th:text="${error}"></span></div>
+            <label class="form-label fw-semibold">Usuario</label>
+            <input class="form-control mb-3" name="usuario" placeholder="admin" required autofocus>
+            <label class="form-label fw-semibold">Contraseña</label>
+            <input class="form-control mb-4" type="password" name="clave" placeholder="••••" required>
+            <button class="btn btn-bp w-100 py-2">Ingresar <i class="bi bi-arrow-right ms-1"></i></button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

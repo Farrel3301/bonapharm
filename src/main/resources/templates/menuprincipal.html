@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Menú principal')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="page-hero"><div class="container">
+    <h1>Hola, <span th:text="${session.nombre}">Admin</span> 👋</h1>
+    <p>Resumen general del inventario de Bonapharm</p>
+</div></div>
+<div class="container pb-5">
+    <div class="row g-3 mb-4">
+        <div class="col-md-4"><div class="bp-card stat"><i class="bi bi-box-seam"></i><div><b th:text="${totalProductos}">0</b><span>Productos activos</span></div></div></div>
+        <div class="col-md-4"><div class="bp-card stat"><i class="bi bi-stack"></i><div><b th:text="${unidades}">0</b><span>Unidades en stock</span></div></div></div>
+        <div class="col-md-4"><div class="bp-card stat"><i class="bi bi-exclamation-triangle"></i><div><b th:text="${stockBajo}">0</b><span>Con stock bajo</span></div></div></div>
+    </div>
+    <h5 class="fw-bold mb-3">Módulos</h5>
+    <div class="row g-3">
+        <div class="col-md-4"><a class="bp-card mod" th:href="@{/productos/listar}"><i class="bi bi-capsule"></i><h5 class="mt-2 mb-1">Productos</h5><small class="text-secondary">Registrar, consultar y modificar</small></a></div>
+        <div class="col-md-4"><a class="bp-card mod" th:href="@{/productos/stock}"><i class="bi bi-clipboard-data"></i><h5 class="mt-2 mb-1">Consultar stock</h5><small class="text-secondary">Disponibilidad por producto</small></a></div>
+        <div class="col-md-4"><div class="bp-card mod off"><i class="bi bi-arrow-left-right"></i><h5 class="mt-2 mb-1">Entradas y salidas <span class="badge badge-soon">Próximo sprint</span></h5><small>Movimientos de inventario</small></div></div>
+        <div class="col-md-4"><div class="bp-card mod off"><i class="bi bi-cart-check"></i><h5 class="mt-2 mb-1">Ventas <span class="badge badge-soon">Próximo sprint</span></h5><small>Registro con validación de stock</small></div></div>
+        <div class="col-md-4"><div class="bp-card mod off"><i class="bi bi-people"></i><h5 class="mt-2 mb-1">Clientes <span class="badge badge-soon">Próximo sprint</span></h5><small>Registro e historial</small></div></div>
+        <div class="col-md-4"><div class="bp-card mod off"><i class="bi bi-graph-up"></i><h5 class="mt-2 mb-1">Reportes <span class="badge badge-soon">Próximo sprint</span></h5><small>Inventario y ventas</small></div></div>
+    </div>
+</div>
+</body>
+</html>
