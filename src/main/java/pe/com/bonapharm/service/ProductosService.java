@@ -9,5 +9,5 @@ public interface ProductosService {
     ProductosEntity add(ProductosEntity obj);
     ProductosEntity update(ProductosEntity obj, Long id);
     ProductosEntity delete(Long id);
-    boolean existeSku(String sku, Long idExcluir);
+    boolean existeCodigo(String codigo, Long idExcluir);
 }

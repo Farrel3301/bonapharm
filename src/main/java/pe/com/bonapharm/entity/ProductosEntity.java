@@ -17,8 +17,8 @@ public class ProductosEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 30, nullable = false, unique = true)
-    private String sku;
+    @Column(name = "codigo_producto", length = 30, nullable = false, unique = true)
+    private String codigo;
 
     @Column(length = 120, nullable = false)
     private String nombre;
@@ -28,12 +28,6 @@ public class ProductosEntity {
 
     @Column(length = 60, nullable = false)
     private String categoria;
-
-    @Column(name = "numero_guia_remision", length = 30, nullable = false)
-    private String numeroGuiaRemision;
-
-    @Column(name = "numero_lote", length = 40, nullable = false)
-    private String numeroLote;
 
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal precio;

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Entrada de productos')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="page-hero"><div class="container"><h1><i class="bi bi-box-arrow-in-down me-2"></i>Entrada de productos</h1><p>Ingreso de mercadería: se crea el lote y se actualiza el stock</p></div></div>
+<div class="container pb-5" style="max-width:820px">
+    <form class="bp-card" method="post" th:action="@{/entradas/registrar}">
+        <div class="alert alert-success py-2" th:if="${ok}" th:text="${ok}"></div>
+        <div class="alert alert-danger py-2" th:if="${error}"><i class="bi bi-exclamation-circle me-1"></i><span th:text="${error}"></span></div>
+        <div class="row g-3">
+            <div class="col-12"><label class="form-label fw-semibold">Producto *</label>
+                <select class="form-select" name="productoId"><option value="">Seleccione producto...</option>
+                    <option th:each="p : ${productos}" th:value="${p.id}" th:text="${p.codigo + ' - ' + p.nombre + ' (stock: ' + p.stock + ')'}"></option></select></div>
+            <div class="col-md-6"><label class="form-label fw-semibold">Lote *</label>
+                <select class="form-select" name="codigoLote"><option value="">Seleccione lote...</option>
+                    <option th:each="l : ${lotes}" th:value="${l.codigoLote}" th:text="${l.codigoLote}"></option></select></div>
+            <div class="col-md-6"><label class="form-label fw-semibold">Fecha de vencimiento *</label>
+                <input class="form-control" type="date" name="fechaVencimiento" id="venc"></div>
+            <div class="col-md-6"><label class="form-label fw-semibold">Cantidad recibida *</label><input class="form-control" type="number" min="1" name="cantidad"></div>
+            <div class="col-md-6"><label class="form-label fw-semibold">N.º de guía de remisión *</label><input class="form-control" name="guia" maxlength="30" placeholder="Ej: T001-00001234"></div>
+        </div>
+        <div class="d-flex gap-2 justify-content-end mt-4">
+            <a class="btn btn-outline-secondary" th:href="@{/menuprincipal}">Cancelar</a>
+            <button class="btn btn-bp"><i class="bi bi-check2-circle me-1"></i>Registrar entrada</button>
+        </div>
+    </form>
+</div>
+<script>document.getElementById('venc').min = new Date().toISOString().split('T')[0];</script>
+</body>
+</html>

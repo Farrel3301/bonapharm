@@ -8,19 +8,25 @@
     <p>Resumen general del inventario de Bonapharm</p>
 </div></div>
 <div class="container pb-5">
-    <div class="row g-3 mb-4">
+    <div class="alert alert-warning d-flex align-items-center" th:if="${session.rol == 'ADMIN' and (vencidos + porVencer) > 0}"><i class="bi bi-exclamation-triangle-fill me-2"></i><div><b th:text="${vencidos}"></b> lote(s) vencido(s) y <b th:text="${porVencer}"></b> por vencer en 30 días. <a th:href="@{/vencimientos}">Ver detalle</a></div></div>
+    <div class="row g-3 mb-4" th:if="${session.rol == 'ADMIN'}">
         <div class="col-md-4"><div class="bp-card stat"><i class="bi bi-box-seam"></i><div><b th:text="${totalProductos}">0</b><span>Productos activos</span></div></div></div>
         <div class="col-md-4"><div class="bp-card stat"><i class="bi bi-stack"></i><div><b th:text="${unidades}">0</b><span>Unidades en stock</span></div></div></div>
         <div class="col-md-4"><div class="bp-card stat"><i class="bi bi-exclamation-triangle"></i><div><b th:text="${stockBajo}">0</b><span>Con stock bajo</span></div></div></div>
     </div>
     <h5 class="fw-bold mb-3">Módulos</h5>
     <div class="row g-3">
-        <div class="col-md-4"><a class="bp-card mod" th:href="@{/productos/listar}"><i class="bi bi-capsule"></i><h5 class="mt-2 mb-1">Productos</h5><small class="text-secondary">Registrar, consultar y modificar</small></a></div>
+        <div class="col-md-4" th:if="${session.rol == 'ADMIN'}"><a class="bp-card mod" th:href="@{/productos/listar}"><i class="bi bi-capsule"></i><h5 class="mt-2 mb-1">Productos</h5><small class="text-secondary">Registrar, consultar y modificar</small></a></div>
+        <div class="col-md-4" th:if="${session.rol == 'ADMIN'}"><a class="bp-card mod" th:href="@{/entradas/registro}"><i class="bi bi-box-arrow-in-down"></i><h5 class="mt-2 mb-1">Entradas</h5><small class="text-secondary">Ingreso de mercadería con lote y vencimiento</small></a></div>
+        <div class="col-md-4" th:if="${session.rol == 'ADMIN'}"><a class="bp-card mod" th:href="@{/vencimientos}"><i class="bi bi-hourglass-split"></i><h5 class="mt-2 mb-1">Próximos a vencer</h5><small class="text-secondary">Alertas de vencimiento</small></a></div>
+        <div class="col-md-4"><a class="bp-card mod" th:href="@{/ventas/registro}"><i class="bi bi-cart-check"></i><h5 class="mt-2 mb-1">Registrar venta</h5><small class="text-secondary">Validación de stock y descuento automático</small></a></div>
+        <div class="col-md-4"><a class="bp-card mod" th:href="@{/ventas/historial}"><i class="bi bi-clock-history"></i><h5 class="mt-2 mb-1">Historial de ventas</h5><small class="text-secondary">Guías de remisión y cancelaciones</small></a></div>
         <div class="col-md-4"><a class="bp-card mod" th:href="@{/productos/stock}"><i class="bi bi-clipboard-data"></i><h5 class="mt-2 mb-1">Consultar stock</h5><small class="text-secondary">Disponibilidad por producto</small></a></div>
-        <div class="col-md-4"><div class="bp-card mod off"><i class="bi bi-arrow-left-right"></i><h5 class="mt-2 mb-1">Entradas y salidas <span class="badge badge-soon">Próximo sprint</span></h5><small>Movimientos de inventario</small></div></div>
-        <div class="col-md-4"><div class="bp-card mod off"><i class="bi bi-cart-check"></i><h5 class="mt-2 mb-1">Ventas <span class="badge badge-soon">Próximo sprint</span></h5><small>Registro con validación de stock</small></div></div>
-        <div class="col-md-4"><div class="bp-card mod off"><i class="bi bi-people"></i><h5 class="mt-2 mb-1">Clientes <span class="badge badge-soon">Próximo sprint</span></h5><small>Registro e historial</small></div></div>
-        <div class="col-md-4"><div class="bp-card mod off"><i class="bi bi-graph-up"></i><h5 class="mt-2 mb-1">Reportes <span class="badge badge-soon">Próximo sprint</span></h5><small>Inventario y ventas</small></div></div>
+        <div class="col-md-4" th:if="${session.rol == 'ADMIN'}"><a class="bp-card mod" th:href="@{/reportes/inventario}"><i class="bi bi-graph-up"></i><h5 class="mt-2 mb-1">Reportes</h5><small class="text-secondary">Inventario, ventas y vencimientos (PDF y Excel)</small></a></div>
+        <div class="col-md-4" th:if="${session.rol == 'ADMIN'}"><a class="bp-card mod" th:href="@{/usuarios/listar}"><i class="bi bi-person-gear"></i><h5 class="mt-2 mb-1">Usuarios</h5><small class="text-secondary">Registrar administradores y vendedores</small></a></div>
+        <div class="col-md-4" th:if="${session.rol == 'ADMIN'}"><a class="bp-card mod" th:href="@{/salidas/registro}"><i class="bi bi-box-arrow-up"></i><h5 class="mt-2 mb-1">Salidas</h5><small class="text-secondary">Vencidos, mermas y ajustes</small></a></div>
+        <div class="col-md-4" th:if="${session.rol == 'ADMIN'}"><a class="bp-card mod" th:href="@{/clientes/listar}"><i class="bi bi-building"></i><h5 class="mt-2 mb-1">Clientes</h5><small class="text-secondary">Registro de empresas clientes</small></a></div>
+        <div class="col-md-4"><a class="bp-card mod" th:href="@{/ventas/cliente}"><i class="bi bi-person-lines-fill"></i><h5 class="mt-2 mb-1">Compras por cliente</h5><small class="text-secondary">Historial de compras</small></a></div>
     </div>
 </div>
 </body>

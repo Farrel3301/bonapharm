@@ -21,7 +21,14 @@ public class WebConfig implements WebMvcConfigurer {
             @Override
             public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object h) throws Exception {
                 var s = req.getSession(false);
-                if (s != null && s.getAttribute("usuario") != null) return true;
+                if (s != null && s.getAttribute("usuario") != null) {
+                    String path = req.getRequestURI().substring(req.getContextPath().length());
+                    boolean vendedor = "VENDEDOR".equals(s.getAttribute("rol"));
+                    if (!vendedor || path.startsWith("/ventas") || path.startsWith("/cuenta") || path.equals("/menuprincipal")
+                            || path.equals("/productos/stock") || path.equals("/logout")) return true;
+                    res.sendRedirect(req.getContextPath() + "/menuprincipal");
+                    return false;
+                }
                 res.sendRedirect(req.getContextPath() + "/login");
                 return false;
             }

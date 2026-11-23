@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Reporte de ventas')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="page-hero"><div class="container"><h1><i class="bi bi-cart-check me-2"></i>Reporte de ventas</h1><p>Ventas realizadas durante un período</p></div></div>
+<div class="container pb-5">
+    <div class="bp-card">
+        <ul th:replace="~{fragments :: tabs('ventas')}"></ul>
+        <form class="row g-2 align-items-end mb-4" method="get" th:action="@{/reportes/ventas}">
+            <div class="col-md-2"><label class="form-label fw-semibold">Desde *</label><input class="form-control" type="date" name="desde" th:value="${desde}" required></div>
+            <div class="col-md-2"><label class="form-label fw-semibold">Hasta *</label><input class="form-control" type="date" name="hasta" th:value="${hasta}" required></div>
+            <div class="col-md-3"><label class="form-label fw-semibold">Cliente</label>
+                <select class="form-select" name="clienteId"><option value="">Todos</option>
+                    <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.razonSocial}" th:selected="${c.id == clienteId}"></option></select></div>
+            <div class="col-md-2"><label class="form-label fw-semibold">Vendedor</label>
+                <select class="form-select" name="vendedor"><option value="">Todos</option>
+                    <option th:each="u : ${usuarios}" th:value="${u.usuario}" th:text="${u.usuario}" th:selected="${u.usuario == vendedor}"></option></select></div>
+            <div class="col-auto d-flex gap-2">
+                <button class="btn btn-bp"><i class="bi bi-funnel me-1"></i>Generar</button>
+                <button class="btn btn-outline-danger" formtarget="_blank" th:formaction="@{/reportes/ventas/pdf}"><i class="bi bi-file-earmark-pdf me-1"></i>PDF</button>
+                <button class="btn btn-outline-success" th:formaction="@{/reportes/ventas/excel}"><i class="bi bi-file-earmark-excel me-1"></i>Excel</button>
+            </div>
+        </form>
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+        <div th:if="${r != null}" th:replace="~{fragments :: resultado(${r})}"></div>
+    </div>
+</div>
+</body>
+</html>

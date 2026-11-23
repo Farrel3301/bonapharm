@@ -12,14 +12,48 @@
 <nav th:fragment="navbar" class="navbar navbar-expand-lg bp-nav">
     <div class="container">
         <a class="navbar-brand" th:href="@{/menuprincipal}"><i class="bi bi-capsule-pill me-2"></i>Bonapharm</a>
-        <div class="navbar-nav flex-row gap-3 me-auto ms-4">
+        <div class="navbar-nav flex-row flex-wrap gap-2 me-auto ms-3">
             <a class="nav-link" th:href="@{/menuprincipal}">Inicio</a>
-            <a class="nav-link" th:href="@{/productos/listar}">Productos</a>
+            <a class="nav-link" th:if="${session.rol == 'ADMIN'}" th:href="@{/productos/listar}">Productos</a>
+            <a class="nav-link" th:if="${session.rol == 'ADMIN'}" th:href="@{/entradas/registro}">Entradas</a>
+            <a class="nav-link" th:if="${session.rol == 'ADMIN'}" th:href="@{/salidas/registro}">Salidas</a>
+            <a class="nav-link" th:if="${session.rol == 'ADMIN'}" th:href="@{/vencimientos}">Vencimientos</a>
+            <a class="nav-link" th:if="${session.rol == 'ADMIN'}" th:href="@{/clientes/listar}">Clientes</a>
+            <a class="nav-link" th:if="${session.rol == 'ADMIN'}" th:href="@{/reportes/inventario}">Reportes</a>
+            <a class="nav-link" th:if="${session.rol == 'ADMIN'}" th:href="@{/usuarios/listar}">Usuarios</a>
+            <a class="nav-link" th:href="@{/ventas/registro}">Ventas</a>
+            <a class="nav-link" th:href="@{/ventas/historial}">Historial</a>
             <a class="nav-link" th:href="@{/productos/stock}">Stock</a>
         </div>
-        <span class="bp-user me-3"><i class="bi bi-person-circle me-1"></i><span th:text="${session.nombre}">Admin</span></span>
+        <a class="bp-user me-3 text-decoration-none" th:href="@{/cuenta/clave}" title="Cambiar mi contraseña"><i class="bi bi-person-circle me-1"></i><span th:text="${session.nombre}">Admin</span><i class="bi bi-key ms-2"></i></a>
         <a class="btn btn-sm btn-outline-light" th:href="@{/logout}"><i class="bi bi-box-arrow-right"></i> Salir</a>
     </div>
 </nav>
+<ul th:fragment="tabs(activo)" class="nav nav-pills mb-3">
+    <li class="nav-item"><a class="nav-link" th:classappend="${activo == 'inventario'} ? 'active'" th:href="@{/reportes/inventario}"><i class="bi bi-boxes me-1"></i>Inventario</a></li>
+    <li class="nav-item"><a class="nav-link" th:classappend="${activo == 'ventas'} ? 'active'" th:href="@{/reportes/ventas}"><i class="bi bi-cart-check me-1"></i>Ventas</a></li>
+    <li class="nav-item"><a class="nav-link" th:classappend="${activo == 'vencimientos'} ? 'active'" th:href="@{/reportes/vencimientos}"><i class="bi bi-hourglass-split me-1"></i>Próximos a vencer</a></li>
+</ul>
+<div th:fragment="resultado(r)">
+    <div class="row g-3 mb-3" th:unless="${#lists.isEmpty(r.filas)}">
+        <div class="col-6 col-lg-3" th:each="t : ${r.totales}"><div class="bp-card stat py-3"><div><b class="fs-5" th:text="${t[1]}"></b><span th:text="${t[0]}"></span></div></div></div>
+    </div>
+    <div class="alert alert-info" th:if="${#lists.isEmpty(r.filas)}"><i class="bi bi-info-circle me-1"></i><span th:text="${r.mensajeVacio}"></span></div>
+    <div class="table-responsive" th:unless="${#lists.isEmpty(r.filas)}">
+        <table class="table table-hover align-middle">
+            <thead><tr><th th:each="h : ${r.columnas}" th:text="${h}"></th></tr></thead>
+            <tbody><tr th:each="f : ${r.filas}"><td th:each="c : ${f}" th:text="${c}"></td></tr></tbody>
+        </table>
+    </div>
+    <div th:if="${r.tieneDetalle()}">
+        <h5 class="fw-bold mt-4" th:text="${r.tituloDetalle}"></h5>
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead><tr><th th:each="h : ${r.columnasDetalle}" th:text="${h}"></th></tr></thead>
+                <tbody><tr th:each="f : ${r.filasDetalle}"><td th:each="c : ${f}" th:text="${c}"></td></tr></tbody>
+            </table>
+        </div>
+    </div>
+</div>
 </body>
 </html>

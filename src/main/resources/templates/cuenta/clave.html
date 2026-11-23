@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Cambiar contraseña')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="page-hero"><div class="container"><h1><i class="bi bi-key me-2"></i>Cambiar contraseña</h1><p>Usuario: <b th:text="${session.usuario}"></b></p></div></div>
+<div class="container pb-5" style="max-width:520px">
+    <form class="bp-card" method="post" th:action="@{/cuenta/clave}">
+        <div class="alert alert-success py-2" th:if="${ok}" th:text="${ok}"></div>
+        <div class="alert alert-danger py-2" th:if="${error}"><i class="bi bi-exclamation-circle me-1"></i><span th:text="${error}"></span></div>
+        <label class="form-label fw-semibold">Contraseña actual *</label>
+        <input class="form-control mb-3" type="password" name="actual" required>
+        <label class="form-label fw-semibold">Nueva contraseña *</label>
+        <input class="form-control mb-3" type="password" name="nueva" minlength="4" required>
+        <label class="form-label fw-semibold">Confirmar nueva contraseña *</label>
+        <input class="form-control mb-4" type="password" name="confirmar" minlength="4" required>
+        <button class="btn btn-bp w-100"><i class="bi bi-check2-circle me-1"></i>Cambiar contraseña</button>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Historial de ventas')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="page-hero"><div class="container"><h1><i class="bi bi-clock-history me-2"></i>Historial de ventas</h1><p>Consulta, guía de remisión y cancelación de ventas</p></div></div>
+<div class="container pb-5">
+    <div class="bp-card">
+        <div class="alert alert-success py-2" th:if="${ok}" th:text="${ok}"></div>
+        <div class="alert alert-danger py-2" th:if="${error}" th:text="${error}"></div>
+        <div class="text-center text-secondary py-5" th:if="${#lists.isEmpty(lista)}"><i class="bi bi-receipt fs-1"></i><p class="mt-2 mb-0">Aún no hay ventas registradas.</p></div>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(lista)}">
+            <table class="table table-hover align-middle">
+                <thead><tr><th>Guía N.º</th><th>Registrada</th><th>Emisión</th><th>Traslado</th><th>Vendedor</th><th>Total</th><th>Estado</th><th class="text-end">Acciones</th></tr></thead>
+                <tbody>
+                <tr th:each="v : ${lista}">
+                    <td class="fw-semibold" th:text="${v.numeroGuia}"></td>
+                    <td th:text="${#temporals.format(v.fecha,'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${#temporals.format(v.fechaEmision,'dd/MM/yyyy')}"></td>
+                    <td th:text="${#temporals.format(v.fechaTraslado,'dd/MM/yyyy')}"></td>
+                    <td th:text="${v.usuario}"></td>
+                    <td th:text="'S/ ' + ${v.total}"></td>
+                    <td><span class="pill" th:classappend="${v.estado == 'ACTIVA'} ? 'pill-ok' : 'pill-out'" th:text="${v.estado == 'ACTIVA'} ? 'Activa' : 'Cancelada'"></span></td>
+                    <td class="text-end text-nowrap">
+                        <a class="btn btn-sm btn-outline-bp" target="_blank" th:href="@{/ventas/guia/{id}(id=${v.id})}"><i class="bi bi-eye"></i> Ver guía</a>
+                        <a class="btn btn-sm btn-outline-secondary" th:href="@{/ventas/guia/{id}(id=${v.id},descargar=true)}"><i class="bi bi-download"></i></a>
+                        <form class="d-inline" method="post" th:action="@{/ventas/cancelar/{id}(id=${v.id})}" th:if="${v.estado == 'ACTIVA'}" onsubmit="return confirm('¿Cancelar esta venta? El stock volverá a sus lotes.')">
+                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-x-circle"></i> Cancelar</button></form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

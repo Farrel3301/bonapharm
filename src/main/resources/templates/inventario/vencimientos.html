@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Próximos a vencer')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="page-hero"><div class="container"><h1><i class="bi bi-hourglass-split me-2"></i>Próximos a vencer</h1><p>Lotes con stock que vencen pronto o ya vencieron</p></div></div>
+<div class="container pb-5">
+    <div class="bp-card">
+        <form class="d-flex align-items-center gap-2 mb-3" th:action="@{/vencimientos}" method="get">
+            <label class="fw-semibold">Vencen en los próximos</label>
+            <select class="form-select w-auto" name="dias" onchange="this.form.submit()">
+                <option value="30" th:selected="${dias == 30}">30 días</option>
+                <option value="60" th:selected="${dias == 60}">60 días</option>
+                <option value="90" th:selected="${dias == 90}">90 días</option>
+            </select>
+        </form>
+        <div class="alert alert-danger" th:if="${vencidos > 0}"><i class="bi bi-exclamation-triangle-fill me-1"></i>ALERTA: hay <b th:text="${vencidos}"></b> lote(s) ya vencido(s) con stock. Retíralos de la venta.</div>
+        <div class="alert alert-warning" th:if="${vencidos == 0 and !#lists.isEmpty(lista)}"><i class="bi bi-bell-fill me-1"></i>ALERTA: hay productos próximos a vencer.</div>
+        <div class="alert alert-success" th:if="${#lists.isEmpty(lista)}"><i class="bi bi-check-circle me-1"></i>No hay productos próximos a vencer.</div>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(lista)}">
+            <table class="table table-hover align-middle">
+                <thead><tr><th>Código</th><th>Producto</th><th>Lote</th><th>Vence</th><th>Días</th><th>Cantidad</th><th>Estado</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="l : ${lista}">
+                    <td class="fw-semibold" th:text="${l.producto.codigo}"></td>
+                    <td th:text="${l.producto.nombre}"></td>
+                    <td th:text="${l.codigoLote}"></td>
+                    <td th:text="${l.fechaVencimiento}"></td>
+                    <td th:text="${l.diasParaVencer}"></td>
+                    <td th:text="${l.cantidad}"></td>
+                    <td><span class="pill" th:classappend="${l.diasParaVencer < 0} ? 'pill-out' : (${l.diasParaVencer <= 30} ? 'pill-low' : 'pill-ok')"
+                              th:text="${l.diasParaVencer < 0} ? 'Vencido' : (${l.diasParaVencer <= 30} ? 'Por vencer' : 'Vigente')"></span></td>
+                    <td><a class="btn btn-sm btn-outline-danger" th:if="${l.diasParaVencer < 0}" th:href="@{/salidas/registro(productoId=${l.producto.id},loteId=${l.id})}">Dar de baja</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Reporte de inventario')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="page-hero"><div class="container"><h1><i class="bi bi-boxes me-2"></i>Reporte de inventario</h1><p>Estado de los productos disponibles</p></div></div>
+<div class="container pb-5">
+    <div class="bp-card">
+        <ul th:replace="~{fragments :: tabs('inventario')}"></ul>
+        <form class="row g-2 align-items-end mb-4" method="get" th:action="@{/reportes/inventario}">
+            <div class="col-md-3"><label class="form-label fw-semibold">Categoría</label>
+                <select class="form-select" name="categoria"><option value="">Todas</option>
+                    <option th:each="c : ${categorias}" th:value="${c.nombre}" th:text="${c.nombre}" th:selected="${c.nombre == categoria}"></option></select></div>
+            <div class="col-md-3"><label class="form-label fw-semibold">Estado del stock</label>
+                <select class="form-select" name="estado"><option value="">Todos</option>
+                    <option value="Disponible" th:selected="${estado == 'Disponible'}">Disponible</option>
+                    <option value="Stock bajo" th:selected="${estado == 'Stock bajo'}">Stock bajo</option>
+                    <option value="Agotado" th:selected="${estado == 'Agotado'}">Agotado</option></select></div>
+            <div class="col-auto d-flex gap-2">
+                <button class="btn btn-bp"><i class="bi bi-funnel me-1"></i>Generar</button>
+                <button class="btn btn-outline-danger" formtarget="_blank" th:formaction="@{/reportes/inventario/pdf}"><i class="bi bi-file-earmark-pdf me-1"></i>PDF</button>
+                <button class="btn btn-outline-success" th:formaction="@{/reportes/inventario/excel}"><i class="bi bi-file-earmark-excel me-1"></i>Excel</button>
+            </div>
+        </form>
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+        <div th:if="${r != null}" th:replace="~{fragments :: resultado(${r})}"></div>
+    </div>
+</div>
+</body>
+</html>

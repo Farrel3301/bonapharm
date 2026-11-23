@@ -1,7 +1,12 @@
 package pe.com.bonapharm.controller;
 
 import pe.com.bonapharm.entity.ProductosEntity;
+import pe.com.bonapharm.entity.CatalogoCategoriasEntity;
+import pe.com.bonapharm.entity.CatalogoLotesEntity;
+import pe.com.bonapharm.entity.CatalogoMedicamentosEntity;
+import pe.com.bonapharm.service.CatalogoService;
 import pe.com.bonapharm.service.ProductosService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +18,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ProductosController {
 
     @Autowired private ProductosService servicio;
+    @Autowired private CatalogoService catalogo;
+
+    // Listas desplegables (datos desde la BD) disponibles en todas las vistas de este controlador
+    @ModelAttribute("medicamentos")
+    public List<CatalogoMedicamentosEntity> medicamentos() { return catalogo.medicamentos(); }
+
+    @ModelAttribute("categorias")
+    public List<CatalogoCategoriasEntity> categorias() { return catalogo.categorias(); }
+
+    @ModelAttribute("lotes")
+    public List<CatalogoLotesEntity> lotes() { return catalogo.lotes(); }
 
     // HU-02 Consultar productos
     @GetMapping("/listar")
@@ -35,19 +51,19 @@ public class ProductosController {
     // HU-01 Registrar producto
     @GetMapping("/registro")
     public String MostrarRegistrarProductos(Model modelo) {
-        modelo.addAttribute("producto", ProductosEntity.builder().stock(0).build());
+        modelo.addAttribute("producto", ProductosEntity.builder().stock(0).stockMinimo(5).build());
         return "productos/formproductos";
     }
 
     @PostMapping("/registrar")
     public String RegistrarProductos(@ModelAttribute("producto") ProductosEntity obj, Model modelo, RedirectAttributes ra) {
         String error = validar(obj, true);
+        if (error == null && servicio.existeCodigo(obj.getCodigo().trim(), null)) error = "Ya existe un producto con ese Código.";
         if (error != null) {
             modelo.addAttribute("error", error);
             return "productos/formproductos";
-        }    
-        obj.setNumeroGuiaRemision(obj.getNumeroGuiaRemision().trim());
-        obj.setNumeroLote(obj.getNumeroLote().trim());
+        }
+        obj.setCodigo(obj.getCodigo().trim());
         servicio.add(obj);
         ra.addFlashAttribute("ok", "Producto registrado correctamente.");
         return "redirect:/productos/listar";
@@ -68,13 +84,13 @@ public class ProductosController {
     @PostMapping("/actualizar/{id}")
     public String ActualizarProductos(@ModelAttribute("producto") ProductosEntity obj, @PathVariable Long id, Model modelo, RedirectAttributes ra) {
         String error = validar(obj, false);
+        if (error == null && servicio.existeCodigo(obj.getCodigo().trim(), id)) error = "Ya existe otro producto con ese Código.";
         if (error != null) {
             obj.setId(id);
             modelo.addAttribute("error", error);
             return "productos/formproductos";
         }
-        obj.setNumeroGuiaRemision(obj.getNumeroGuiaRemision().trim());
-        obj.setNumeroLote(obj.getNumeroLote().trim());
+        obj.setCodigo(obj.getCodigo().trim());
         if (servicio.update(obj, id) == null) ra.addFlashAttribute("error", "El producto no fue encontrado.");
         else ra.addFlashAttribute("ok", "Producto actualizado correctamente.");
         return "redirect:/productos/listar";
@@ -88,10 +104,10 @@ public class ProductosController {
     }
 
     private String validar(ProductosEntity p, boolean nuevo) {
-        if  (vacio(p.getNombre()) || vacio(p.getCategoria()) || vacio(p.getNumeroGuiaRemision()) || vacio(p.getNumeroLote()) || p.getPrecio() == null
-                || (nuevo && p.getStock() == null))
-            return "Faltan datos requeridos: SKU, nombre, categoría, guía de remisión, lote, precio, stock y stock mínimo son obligatorios.";
-        if (p.getPrecio().signum() < 0 || (nuevo && p.getStock() < 0))
+        if (vacio(p.getCodigo()) || vacio(p.getNombre()) || vacio(p.getCategoria()) || p.getPrecio() == null
+                || p.getStockMinimo() == null || (nuevo && p.getStock() == null))
+            return "Faltan datos requeridos: Código, nombre, categoría, precio y stock mínimo son obligatorios.";
+        if (p.getPrecio().signum() < 0 || p.getStockMinimo() < 0 || (nuevo && p.getStock() < 0))
             return "El precio y las cantidades no pueden ser negativos.";
         return null;
     }

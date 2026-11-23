@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Clientes')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="page-hero"><div class="container"><h1><i class="bi bi-building me-2"></i>Clientes</h1><p>Empresas que nos compran: sus datos completan la guía de remisión</p></div></div>
+<div class="container pb-5">
+    <div class="row g-3">
+        <div class="col-lg-4">
+            <form class="bp-card" method="post" th:action="@{/clientes/registrar}">
+                <h5 class="fw-bold mb-3">Nuevo cliente</h5>
+                <div class="alert alert-success py-2" th:if="${ok}" th:text="${ok}"></div>
+                <div class="alert alert-danger py-2" th:if="${error}"><i class="bi bi-exclamation-circle me-1"></i><span th:text="${error}"></span></div>
+                <label class="form-label fw-semibold">Código de cliente *</label>
+                <input class="form-control mb-3" name="codigo" maxlength="30" placeholder="Ej: CLI-004">
+                <label class="form-label fw-semibold">RUC *</label>
+                <input class="form-control mb-3" name="ruc" maxlength="11" inputmode="numeric" placeholder="11 dígitos">
+                <label class="form-label fw-semibold">Razón social *</label>
+                <input class="form-control mb-3" name="razonSocial" maxlength="150">
+                <label class="form-label fw-semibold">Dirección de oficinas *</label>
+                <input class="form-control mb-3" name="direccionOficina" maxlength="250">
+                <label class="form-label fw-semibold">Dirección del almacén *</label>
+                <input class="form-control mb-4" name="direccionAlmacen" maxlength="250">
+                <button class="btn btn-bp w-100"><i class="bi bi-building-add me-1"></i>Registrar cliente</button>
+            </form>
+        </div>
+        <div class="col-lg-8">
+            <div class="bp-card">
+                <h5 class="fw-bold mb-3">Clientes registrados</h5>
+                <div class="text-center text-secondary py-4" th:if="${#lists.isEmpty(lista)}">Aún no hay clientes registrados.</div>
+                <div class="table-responsive" th:unless="${#lists.isEmpty(lista)}">
+                    <table class="table table-hover align-middle">
+                        <thead><tr><th>Código</th><th>RUC</th><th>Razón social</th><th>Oficinas</th><th>Almacén</th></tr></thead>
+                        <tbody><tr th:each="c : ${lista}">
+                            <td class="fw-semibold" th:text="${c.codigo}"></td><td th:text="${c.ruc}"></td><td th:text="${c.razonSocial}"></td>
+                            <td th:text="${c.direccionOficina}"></td><td th:text="${c.direccionAlmacen}"></td>
+                        </tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

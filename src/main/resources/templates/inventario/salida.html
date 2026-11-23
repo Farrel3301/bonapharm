@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Salida de productos')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="page-hero"><div class="container"><h1><i class="bi bi-box-arrow-up me-2"></i>Salida de productos</h1><p>Vencidos, mermas, devoluciones y ajustes: descuenta del lote y del stock</p></div></div>
+<div class="container pb-5" style="max-width:820px">
+    <form class="bp-card" method="post" th:action="@{/salidas/registrar}">
+        <div class="alert alert-success py-2" th:if="${ok}" th:text="${ok}"></div>
+        <div class="alert alert-danger py-2" th:if="${error}"><i class="bi bi-exclamation-circle me-1"></i><span th:text="${error}"></span></div>
+        <div class="row g-3">
+            <div class="col-12"><label class="form-label fw-semibold">Producto *</label>
+                <select class="form-select" id="prod"><option value="">Seleccione producto...</option>
+                    <option th:each="p : ${productos}" th:value="${p.id}" th:text="${p.codigo + ' - ' + p.nombre}"></option></select></div>
+            <div class="col-12"><label class="form-label fw-semibold">Lote *</label>
+                <select class="form-select" name="loteId" id="lote"><option value="">Seleccione primero un producto...</option></select></div>
+            <div class="col-md-6"><label class="form-label fw-semibold">Cantidad *</label><input class="form-control" type="number" min="1" name="cantidad"></div>
+            <div class="col-md-6"><label class="form-label fw-semibold">Motivo *</label>
+                <select class="form-select" name="motivo"><option value="">Seleccione motivo...</option>
+                    <option th:each="mo : ${motivos}" th:value="${mo.nombre}" th:text="${mo.nombre}"></option></select></div>
+        </div>
+        <div class="d-flex gap-2 justify-content-end mt-4">
+            <a class="btn btn-outline-secondary" th:href="@{/menuprincipal}">Cancelar</a>
+            <button class="btn btn-bp"><i class="bi bi-check2-circle me-1"></i>Registrar salida</button>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript">
+const LOTES = /*[[${lotesMapa}]]*/ {};
+const PP = /*[[${preProducto}]]*/ 0, PL = /*[[${preLote}]]*/ 0;
+const prod=document.getElementById('prod'),lote=document.getElementById('lote');
+function cargar(){const ls=LOTES[prod.value]||[];
+ lote.innerHTML='<option value="">'+(prod.value?'Seleccione lote...':'Seleccione primero un producto...')+'</option>'+
+  ls.map(function(l){return '<option value="'+l.id+'">'+l.codigo+' · vence '+l.vence+' · disp. '+l.cantidad+(l.vencido?' · VENCIDO':'')+'</option>';}).join('');}
+prod.onchange=cargar;
+if(PP){prod.value=PP;cargar();if(PL)lote.value=PL;}
+</script>
+</body>
+</html>

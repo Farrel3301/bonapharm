@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Registrar venta')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="page-hero"><div class="container"><h1><i class="bi bi-cart-check me-2"></i>Registrar venta</h1><p>Al confirmar se descuenta el stock y se genera la guía de remisión</p></div></div>
+<div class="container pb-5">
+    <form class="bp-card" method="post" th:action="@{/ventas/registrar}">
+        <div class="alert alert-success py-2" th:if="${ok}"><i class="bi bi-check-circle me-1"></i><span th:text="${ok}"></span>
+            <span th:if="${ventaId}"> &middot; <a target="_blank" th:href="@{/ventas/guia/{id}(id=${ventaId})}">Ver guía</a> &middot; <a th:href="@{/ventas/guia/{id}(id=${ventaId},descargar=true)}">Descargar PDF</a></span></div>
+        <div class="alert alert-danger py-2" th:if="${error}"><i class="bi bi-exclamation-circle me-1"></i><span th:text="${error}"></span></div>
+        <div class="row g-3 mb-3">
+            <div class="col-md-3"><label class="form-label fw-semibold">Fecha de emisión *</label><input class="form-control" type="date" name="fechaEmision" id="em"></div>
+            <div class="col-md-3"><label class="form-label fw-semibold">Fecha de traslado *</label><input class="form-control" type="date" name="fechaTraslado" id="tr"></div>
+            <div class="col-md-6"><label class="form-label fw-semibold">Cliente (destinatario) *</label>
+                <select class="form-select" name="clienteId" id="cli"><option value="">Seleccione cliente...</option>
+                    <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.codigo + ' - ' + c.razonSocial}"></option></select>
+                <small class="text-danger" th:if="${#lists.isEmpty(clientes)}">No hay clientes registrados. Pide al administrador que registre uno.</small></div>
+        </div>
+        <table class="table align-middle">
+            <thead><tr><th style="width:30%">Producto</th><th style="width:28%">Lote</th><th style="width:11%">Cantidad</th><th>Stock</th><th>Subtotal</th><th></th></tr></thead>
+            <tbody id="filas"></tbody>
+        </table>
+        <template id="fila"><tr>
+            <td><select class="form-select prod" name="productoId"><option value="">Seleccione producto...</option>
+                <option th:each="p : ${productos}" th:value="${p.id}" th:text="${p.codigo + ' - ' + p.nombre + ' (S/ ' + p.precio + ')'}" th:attr="data-precio=${p.precio}"></option></select></td>
+            <td><select class="form-select lote" name="loteId"><option value="0">Automático (vence primero)</option></select></td>
+            <td><input class="form-control cant" type="number" min="1" value="1" name="cantidad"></td>
+            <td class="disp small"></td><td class="sub fw-semibold"></td>
+            <td><button type="button" class="btn btn-sm btn-outline-danger quitar"><i class="bi bi-trash"></i></button></td>
+        </tr></template>
+        <div class="d-flex flex-wrap justify-content-between align-items-start">
+            <button type="button" class="btn btn-outline-bp" id="agregar"><i class="bi bi-plus-circle me-1"></i>Agregar producto</button>
+            <div class="text-end">
+                <div>Subtotal: <b id="st">S/ 0.00</b></div><div>IGV (18%): <b id="ig">S/ 0.00</b></div>
+                <div class="fs-4 fw-bold">Total: <span id="tot">S/ 0.00</span></div>
+            </div>
+        </div>
+        <div class="text-end mt-3"><button class="btn btn-bp" id="guardar"><i class="bi bi-check2-circle me-1"></i>Confirmar venta</button></div>
+    </form>
+</div>
+<script th:inline="javascript">
+const LOTES = /*[[${lotesMapa}]]*/ {};
+const HOY = /*[[${hoy}]]*/ '';
+const tb=document.getElementById('filas'),tpl=document.getElementById('fila'),btn=document.getElementById('guardar'),
+ cli=document.getElementById('cli'),em=document.getElementById('em'),tr=document.getElementById('tr'),st=document.getElementById('st'),ig=document.getElementById('ig'),tot=document.getElementById('tot');
+em.value=HOY;tr.value=HOY;
+function lotesDe(r){return LOTES[r.querySelector('.prod').value]||[];}
+function cargarLotes(r){const s=r.querySelector('.lote');
+ s.innerHTML='<option value="0">Automático (vence primero)</option>'+lotesDe(r).map(function(l){return '<option value="'+l.id+'">'+l.codigo+' · vence '+l.vence+' · disp. '+l.cantidad+'</option>';}).join('');}
+function calc(){let sub=0,ok=tb.children.length>0;
+ tb.querySelectorAll('tr').forEach(function(r){const o=r.querySelector('.prod').selectedOptions[0],ls=lotesDe(r),lid=+r.querySelector('.lote').value,
+  c=+r.querySelector('.cant').value||0,pr=+(o.dataset.precio||0),d=r.querySelector('.disp');
+  const disp=!o.value?0:(lid?(ls.find(function(l){return l.id==lid;})||{cantidad:0}).cantidad:ls.reduce(function(a,l){return a+l.cantidad;},0));
+  const mal=o.value&&c>disp;
+  d.textContent=!o.value?'':(mal?'Stock insuficiente (disp.: '+disp+')':'Disponible: '+disp);
+  d.className='disp small '+(mal?'text-danger fw-bold':'text-secondary');
+  if(!o.value||c<1||mal)ok=false;
+  r.querySelector('.sub').textContent='S/ '+(c*pr).toFixed(2);sub+=c*pr;});
+ const igv=Math.round(sub*18)/100;
+ st.textContent='S/ '+sub.toFixed(2);ig.textContent='S/ '+igv.toFixed(2);tot.textContent='S/ '+(sub+igv).toFixed(2);
+ btn.disabled=!ok||!cli.value||!em.value||!tr.value||tr.value<em.value;}
+function nueva(){tb.appendChild(tpl.content.cloneNode(true));calc();}
+tb.addEventListener('change',function(e){if(e.target.classList.contains('prod'))cargarLotes(e.target.closest('tr'));calc();});
+tb.addEventListener('input',calc);
+tb.addEventListener('click',function(e){const q=e.target.closest('.quitar');if(q){q.closest('tr').remove();calc();}});
+em.onchange=function(){tr.min=em.value;if(tr.value<em.value)tr.value=em.value;calc();};tr.onchange=calc;cli.onchange=calc;
+document.getElementById('agregar').onclick=nueva;nueva();
+</script>
+</body>
+</html>

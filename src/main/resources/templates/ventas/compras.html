@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Compras por cliente')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="page-hero"><div class="container"><h1><i class="bi bi-person-lines-fill me-2"></i>Compras por cliente</h1><p>Historial de compras de cada cliente</p></div></div>
+<div class="container pb-5">
+    <div class="bp-card">
+        <form class="d-flex align-items-center gap-2 mb-3" th:action="@{/ventas/cliente}" method="get">
+            <label class="fw-semibold">Cliente</label>
+            <select class="form-select w-auto" name="clienteId" onchange="this.form.submit()">
+                <option value="">Seleccione cliente...</option>
+                <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.codigo + ' - ' + c.razonSocial}" th:selected="${c.id == clienteId}"></option>
+            </select>
+        </form>
+        <div class="alert alert-info" th:if="${clienteId != null and #lists.isEmpty(lista)}"><i class="bi bi-info-circle me-1"></i>El cliente no tiene compras registradas.</div>
+        <div class="table-responsive" th:if="${clienteId != null and !#lists.isEmpty(lista)}">
+            <table class="table table-hover align-middle">
+                <thead><tr><th>Guía N.º</th><th>Fecha</th><th>Emisión</th><th>Total</th><th>Estado</th><th class="text-end">Guía</th></tr></thead>
+                <tbody><tr th:each="v : ${lista}">
+                    <td class="fw-semibold" th:text="${v.numeroGuia}"></td>
+                    <td th:text="${#temporals.format(v.fecha,'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${#temporals.format(v.fechaEmision,'dd/MM/yyyy')}"></td>
+                    <td th:text="'S/ ' + ${v.total}"></td>
+                    <td><span class="pill" th:classappend="${v.estado == 'ACTIVA'} ? 'pill-ok' : 'pill-out'" th:text="${v.estado == 'ACTIVA'} ? 'Activa' : 'Cancelada'"></span></td>
+                    <td class="text-end"><a class="btn btn-sm btn-outline-bp" target="_blank" th:href="@{/ventas/guia/{id}(id=${v.id})}"><i class="bi bi-eye"></i> Ver guía</a></td>
+                </tr></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

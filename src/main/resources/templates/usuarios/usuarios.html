@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Usuarios')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div class="page-hero"><div class="container"><h1><i class="bi bi-person-gear me-2"></i>Usuarios</h1><p>Registra administradores y vendedores</p></div></div>
+<div class="container pb-5">
+    <div class="row g-3">
+        <div class="col-lg-4">
+            <form class="bp-card" method="post" th:action="@{/usuarios/registrar}">
+                <h5 class="fw-bold mb-3">Nuevo usuario</h5>
+                <div class="alert alert-success py-2" th:if="${ok}" th:text="${ok}"></div>
+                <div class="alert alert-danger py-2" th:if="${error}"><i class="bi bi-exclamation-circle me-1"></i><span th:text="${error}"></span></div>
+                <label class="form-label fw-semibold">Nombre completo *</label>
+                <input class="form-control mb-3" name="nombre" maxlength="100" required>
+                <label class="form-label fw-semibold">Usuario *</label>
+                <input class="form-control mb-3" name="usuario" maxlength="50" required>
+                <label class="form-label fw-semibold">Contraseña *</label>
+                <input class="form-control mb-3" type="password" name="clave" minlength="4" required>
+                <label class="form-label fw-semibold">Perfil *</label>
+                <select class="form-select mb-4" name="rol"><option value="VENDEDOR">Vendedor</option><option value="ADMIN">Administrador</option></select>
+                <button class="btn btn-bp w-100"><i class="bi bi-person-plus me-1"></i>Registrar usuario</button>
+            </form>
+        </div>
+        <div class="col-lg-8">
+            <div class="bp-card">
+                <h5 class="fw-bold mb-3">Usuarios registrados</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead><tr><th>Usuario</th><th>Nombre</th><th>Perfil</th><th>Estado</th><th class="text-end">Acción</th><th>Contraseña</th></tr></thead>
+                        <tbody>
+                        <tr th:each="u : ${lista}">
+                            <td class="fw-semibold" th:text="${u.usuario}"></td>
+                            <td th:text="${u.nombre}"></td>
+                            <td><span class="pill" th:classappend="${u.rol == 'ADMIN'} ? 'pill-low' : 'pill-ok'" th:text="${u.rol == 'ADMIN'} ? 'Administrador' : 'Vendedor'"></span></td>
+                            <td><span class="pill" th:classappend="${u.estado} ? 'pill-ok' : 'pill-out'" th:text="${u.estado} ? 'Activo' : 'Inactivo'"></span></td>
+                            <td class="text-end"><form method="post" th:action="@{/usuarios/estado/{id}(id=${u.id})}" th:if="${u.usuario != session.usuario}">
+                                <button class="btn btn-sm" th:classappend="${u.estado} ? 'btn-outline-danger' : 'btn-outline-bp'" th:text="${u.estado} ? 'Deshabilitar' : 'Habilitar'"></button></form></td>
+                            <td><form class="d-flex gap-1" method="post" th:action="@{/usuarios/clave/{id}(id=${u.id})}" th:if="${u.usuario != session.usuario}">
+                                <input class="form-control form-control-sm" style="width:125px" type="password" name="clave" minlength="4" placeholder="Nueva clave" required>
+                                <button class="btn btn-sm btn-outline-bp" title="Restablecer contraseña"><i class="bi bi-key"></i></button></form></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
